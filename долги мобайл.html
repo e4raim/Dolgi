@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Долги</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700;900&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #111114;
+  --card: #1c1c20;
+  --card2: #222228;
+  --border: #2e2e36;
+  --border2: #3a3a45;
+  --orange: #f5a23d;
+  --red: #e05555;
+  --blue: #5b9df5;
+  --green: #4ec88a;
+  --purple: #a87fff;
+  --text: #f0f0f5;
+  --sub: #8888a0;
+  --sub2: #55556a;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Golos Text',sans-serif;
+  min-height:100vh;
+  max-width:480px;
+  margin:0 auto;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:0;height:0}
+
+/* ── PAGE ── */
+.page{padding:24px 16px 100px}
+
+/* ── HEADER ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.topbar-title{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:600;letter-spacing:.02em}
+.topbar-btn{width:36px;height:36px;border-radius:50%;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--sub)}
+.topbar-btn svg{width:16px;height:16px}
+
+.badge{display:inline-flex;align-items:center;gap:7px;background:rgba(168,127,255,.12);border:1px solid rgba(168,127,255,.22);color:var(--purple);border-radius:20px;padding:5px 14px;font-family:'Unbounded',sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--purple);animation:blink 2.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+h1{font-family:'Unbounded',sans-serif;font-size:30px;font-weight:900;line-height:1.08;letter-spacing:-.025em;margin-bottom:6px}
+h1 em{color:var(--purple);font-style:normal}
+.h1-sub{color:var(--sub);font-size:13px;margin-bottom:20px}
+
+/* ── HEADER ACTIONS ── */
+.hdr-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:12px;padding:10px 16px;font-family:'Golos Text',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;letter-spacing:-.01em}
+.btn-primary{background:var(--purple);color:#fff;flex:1;justify-content:center}
+.btn-primary:active{background:#9570f0;transform:scale(.97)}
+.btn-ghost{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:active{background:var(--border)}
+.saved-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--sub);padding:5px 11px;background:var(--card2);border-radius:20px;border:1px solid var(--border)}
+.saved-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+
+/* ── KPI ── */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.kpi{background:var(--card);border-radius:18px;padding:18px 16px;position:relative;overflow:hidden;border:1px solid var(--border)}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;border-radius:2px}
+.kpi.kp::after{background:var(--purple)}
+.kpi.ko::after{background:var(--orange)}
+.kpi.kg::after{background:var(--green)}
+.kpi.kr::after{background:var(--red)}
+.kpi-label{font-family:'Unbounded',sans-serif;font-size:9px;font-weight:400;text-transform:uppercase;letter-spacing:.09em;color:var(--sub);margin-bottom:10px;line-height:1.4}
+.kpi-val{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:5px;transition:all .3s}
+.kpi.kp .kpi-val{color:var(--purple)}
+.kpi.ko .kpi-val{color:var(--orange)}
+.kpi.kg .kpi-val{color:var(--green)}
+.kpi.kr .kpi-val{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--sub)}
+
+/* ── CHARTS ── */
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px 16px;margin-bottom:10px}
+.chart-label{font-family:'Unbounded',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--sub);margin-bottom:16px}
+
+/* ── TABS ── */
+.tabs-wrap{margin:20px 0 16px;position:sticky;top:0;z-index:10;background:var(--bg);padding:8px 0}
+.tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:4px}
+.tab{flex:1;padding:9px 12px;border-radius:10px;border:none;background:transparent;color:var(--sub);font-family:'Golos Text',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;text-align:center}
+.tab.active{background:var(--card2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── SECTIONS ── */
+.section{margin-bottom:12px}
+.section-head{display:flex;align-items:center;justify-content:space-between;padding:6px 2px;margin-bottom:8px}
+.section-left{display:flex;align-items:center;gap:8px}
+.sdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.stitle{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.scount{font-size:11px;color:var(--sub);background:var(--card2);border-radius:6px;padding:2px 8px;font-family:'Unbounded',sans-serif;font-weight:300}
+.stotal{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700}
+
+/* ── TABLE CARD ── */
+.tcard{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.t-header{display:grid;grid-template-columns:1fr 100px 90px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.t-header span{font-family:'Unbounded',sans-serif;font-size:9px;color:var(--sub2);text-transform:uppercase;letter-spacing:.08em}
+.t-header span:nth-child(2),.t-header span:nth-child(3){text-align:right}
+
+.t-row{display:grid;grid-template-columns:1fr 100px 90px;align-items:center;padding:0;border-bottom:1px solid rgba(255,255,255,.04);transition:background .12s;position:relative}
+.t-row:last-child{border-bottom:none}
+.t-row:active{background:rgba(255,255,255,.04)}
+
+.t-name{display:flex;align-items:center;gap:8px;padding:13px 14px 13px 14px}
+.t-pill{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.t-name-text{font-size:13px;font-weight:600;outline:none;background:transparent;border:none;color:var(--text);font-family:'Golos Text',sans-serif;width:100%;min-width:0}
+.t-name-text:focus{color:var(--text);border-bottom:1px dashed rgba(168,127,255,.5)}
+
+.t-cell{padding:13px 14px 13px 4px;text-align:right}
+.t-cell input{background:transparent;border:none;outline:none;color:inherit;font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;text-align:right;width:96px;padding:2px 0}
+.t-cell input:focus{border-bottom:1px dashed rgba(168,127,255,.4);color:var(--text)}
+.t-cell.num input{color:var(--text)}
+.t-cell.muted input{font-family:'Golos Text',sans-serif;font-size:12px;font-weight:400;color:var(--sub)}
+.t-cell.muted input:focus{color:var(--text)}
+
+/* delete swipe hint */
+.del-btn{position:absolute;right:0;top:0;bottom:0;width:0;background:rgba(224,85,85,.15);display:flex;align-items:center;justify-content:center;border:none;color:var(--red);cursor:pointer;overflow:hidden;transition:width .18s;border-radius:0 0 0 0}
+.t-row:hover .del-btn,.t-row:focus-within .del-btn{width:44px}
+.del-btn svg{width:14px;height:14px;flex-shrink:0}
+
+/* add row */
+.add-row{width:100%;padding:13px 14px;background:transparent;border:none;border-top:1px dashed var(--border);color:var(--sub);font-family:'Golos Text',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:color .15s}
+.add-row:active{color:var(--text)}
+
+/* subtotal */
+.subtotal-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-top:1px solid var(--border);margin-top:0}
+.subtotal-row span:first-child{font-size:12px;font-weight:600;color:var(--sub)}
+.subtotal-row span:last-child{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700}
+
+/* ── PAYMENTS ── */
+.pay-row{display:grid;grid-template-columns:1fr auto;align-items:center;padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.04);gap:8px;position:relative}
+.pay-row:last-child{border-bottom:none}
+.pay-name{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.pay-amount{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--green);white-space:nowrap}
+.pay-meta{font-size:11px;color:var(--sub);margin-top:2px}
+.pay-tag{display:inline-block;border-radius:6px;padding:2px 7px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.pt-org{background:rgba(245,162,61,.15);color:var(--orange)}
+.pt-micro{background:rgba(224,85,85,.15);color:var(--red)}
+.pt-people{background:rgba(91,157,245,.15);color:var(--blue)}
+.pay-del{background:none;border:none;color:var(--sub2);cursor:pointer;padding:4px;border-radius:6px;transition:color .12s}
+.pay-del:active{color:var(--red)}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:50;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s}
+.overlay.open{opacity:1;pointer-events:all}
+.sheet{background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;transform:translateY(24px);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+.overlay.open .sheet{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px}
+.sheet h3{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;margin-bottom:18px}
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-family:'Unbounded',sans-serif;font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--sub);margin-bottom:6px}
+.form-row input,.form-row select{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'Golos Text',sans-serif;font-size:15px;outline:none;transition:border-color .15s;-webkit-appearance:none}
+.form-row input:focus,.form-row select:focus{border-color:var(--purple)}
+.form-row select option{background:var(--card2)}
+.sheet-actions{display:flex;gap:8px;margin-top:20px}
+.sheet-actions .btn{flex:1;justify-content:center;padding:13px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--card2);border:1px solid var(--border2);border-radius:14px;padding:11px 18px;font-size:13px;z-index:100;opacity:0;transition:all .22s;white-space:nowrap;display:flex;align-items:center;gap:7px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+
+/* ── GRAND TOTAL CARD ── */
+.grand-total{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.grand-total .label{font-family:'Unbounded',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--sub);margin-bottom:4px}
+.grand-total .val{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:800;color:var(--text)}
+
+/* pay total bar */
+.pay-total-card{background:var(--card);border:1px solid rgba(78,200,138,.2);border-radius:18px;padding:16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.pay-total-card .lbl{font-family:'Unbounded',sans-serif;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--sub);margin-bottom:4px}
+.pay-total-card .val{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;color:var(--green)}
+.pay-total-card .cnt{font-size:11px;color:var(--sub)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-btn" onclick="exportData()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M8 2v8M5 7l3 3 3-3M3 12h10"/>
+      </svg>
+    </div>
+    <span class="topbar-title">Долги</span>
+    <div class="topbar-btn" onclick="openAddPayment()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M8 3v10M3 8h10"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="badge"><span class="badge-dot"></span>Живой редактор</div>
+  <h1>Долги <em>&</em><br>Выплаты</h1>
+  <p class="h1-sub">Редактируй прямо в таблице · сохраняется автоматически</p>
+
+  <div class="hdr-actions">
+    <span class="saved-pill"><span class="saved-dot"></span><span id="save-status">Сохранено</span></span>
+    <button class="btn btn-primary" onclick="openAddPayment()">+ Выплата</button>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi kp">
+      <div class="kpi-label">Общий<br>долг</div>
+      <div class="kpi-val" id="kpi-total">—</div>
+      <div class="kpi-sub" id="kpi-total-sub"></div>
+    </div>
+    <div class="kpi ko">
+      <div class="kpi-label">Платежей<br>в месяц</div>
+      <div class="kpi-val" id="kpi-month">—</div>
+      <div class="kpi-sub">минимальный</div>
+    </div>
+    <div class="kpi kg">
+      <div class="kpi-label">Выплачено</div>
+      <div class="kpi-val" id="kpi-paid">—</div>
+      <div class="kpi-sub" id="kpi-paid-sub"></div>
+    </div>
+    <div class="kpi kr">
+      <div class="kpi-label">Микро-<br>займы</div>
+      <div class="kpi-val" id="kpi-micro">—</div>
+      <div class="kpi-sub">платёж ≈ телу</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="chart-card">
+    <div class="chart-label">Структура долга</div>
+    <canvas id="donutChart" height="180"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-label">Долг vs Платёж / месяц</div>
+    <canvas id="barChart" height="160"></canvas>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('debts',this)">Долги</button>
+      <button class="tab" onclick="switchTab('payments',this)">История выплат</button>
+    </div>
+  </div>
+
+  <!-- DEBTS -->
+  <div class="tab-panel active" id="tab-debts">
+    <div id="debt-sections"></div>
+    <!-- grand total -->
+    <div class="grand-total" id="grand-total-card">
+      <div><div class="label">Итого всего</div><div class="val" id="grand-debt">—</div></div>
+      <div style="text-align:right"><div class="label">В месяц</div><div class="val" id="grand-pay" style="color:var(--orange)">—</div></div>
+    </div>
+  </div>
+
+  <!-- PAYMENTS -->
+  <div class="tab-panel" id="tab-payments">
+    <div class="pay-total-card">
+      <div><div class="lbl">Выплачено</div><div class="val" id="pay-total-big">—</div></div>
+      <div style="text-align:right"><div class="lbl">Транзакций</div><div class="cnt" id="pay-count-big" style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;color:var(--text)">—</div></div>
+    </div>
+    <div class="tcard" id="payments-wrap"></div>
+  </div>
+
+</div>
+
+<!-- ADD PAYMENT SHEET -->
+<div class="overlay" id="modal-payment" onclick="overlayClose(event,'modal-payment')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>+ Новая выплата</h3>
+    <div class="form-row"><label>Кому</label><input type="text" id="pay-name" placeholder="Сбер кредитка"></div>
+    <div class="form-row"><label>Сумма ₽</label><input type="number" id="pay-amount" placeholder="0" inputmode="decimal"></div>
+    <div class="form-row"><label>Дата</label><input type="date" id="pay-date-input"></div>
+    <div class="form-row"><label>Категория</label>
+      <select id="pay-cat">
+        <option value="org">Организации</option>
+        <option value="micro">Микрозаймы</option>
+        <option value="people">Люди</option>
+      </select>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-primary" onclick="savePayment()">Добавить</button>
+      <button class="btn btn-ghost" onclick="closeSheet('modal-payment')">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD DEBT SHEET -->
+<div class="overlay" id="modal-debt" onclick="overlayClose(event,'modal-debt')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="modal-debt-title">+ Новый долг</h3>
+    <div class="form-row"><label>Название</label><input type="text" id="debt-name" placeholder="Кредитор"></div>
+    <div class="form-row"><label>Остаток долга ₽</label><input type="number" id="debt-amount" placeholder="0" inputmode="decimal"></div>
+    <div class="form-row"><label>Платёж / мес ₽</label><input type="number" id="debt-payment" placeholder="0" inputmode="decimal"></div>
+    <div class="form-row"><label>С какого времени</label><input type="text" id="debt-since" placeholder="Май 2026"></div>
+    <div class="form-row"><label>Категория</label>
+      <select id="debt-cat">
+        <option value="org">Организации</option>
+        <option value="micro">Микрозаймы</option>
+        <option value="people">Люди</option>
+      </select>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-primary" onclick="saveDebt()">Добавить</button>
+      <button class="btn btn-ghost" onclick="closeSheet('modal-debt')">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="toast-dot"></span><span id="toast-msg">Сохранено</span></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const DEFAULT = {
+  debts: {
+    org:   { label:'Организации', color:'var(--orange)', hex:'#f5a23d',
+      items:[
+        {id:1,  name:'Сбер кредитка',   amount:173000,  payment:8000,   since:'Ноябрь 2024'},
+        {id:2,  name:'Альфа кредит',    amount:78000,   payment:5000,   since:'Ноябрь 2024'},
+        {id:3,  name:'Автокредит',      amount:1506000, payment:35200,  since:'Август 2025'},
+        {id:4,  name:'Т-банк кредитка', amount:357000,  payment:15000,  since:'Август 2025'},
+        {id:5,  name:'Квартира',        amount:950000,  payment:100000, since:'Август 2023'},
+      ]},
+    micro: { label:'Микрозаймы', color:'var(--red)', hex:'#e05555',
+      items:[
+        {id:6,  name:'Вебзайм',       amount:46000, payment:42000, since:'Декабрь 2025'},
+        {id:7,  name:'Веббанкир',     amount:25000, payment:22000, since:'Декабрь 2025'},
+        {id:8,  name:'Турбозайм',     amount:62000, payment:55000, since:'Декабрь 2025'},
+        {id:9,  name:'Срочно деньги', amount:24000, payment:21000, since:'Декабрь 2025'},
+        {id:10, name:'Займер',        amount:65000, payment:58000, since:'Декабрь 2025'},
+      ]},
+    people:{ label:'Люди', color:'var(--blue)', hex:'#5b9df5',
+      items:[
+        {id:11, name:'Яндекс сплит',             amount:9631,   payment:0,      since:'Апрель 2026'},
+        {id:12, name:'За машину',                amount:170000, payment:170000, since:'Январь 2026'},
+        {id:13, name:'Эмма',                     amount:180000, payment:15000,  since:'Октябрь 2025'},
+        {id:14, name:'Миша',                     amount:53750,  payment:5000,   since:'Декабрь 2025'},
+        {id:15, name:'Мама',                     amount:415000, payment:20000,  since:'Март 2026'},
+        {id:16, name:'Милти 1 эт. Симонов',      amount:5000,   payment:0,      since:'Сентябрь 2025'},
+        {id:17, name:'Евроспар',                 amount:3500,   payment:0,      since:''},
+        {id:18, name:'Милти Омега',              amount:10000,  payment:0,      since:''},
+        {id:19, name:'Магазинчик 1 эт. Симонов', amount:7000,   payment:0,      since:''},
+        {id:20, name:'Бухгалтерия',              amount:6250,   payment:6250,   since:'Март 2025'},
+      ]},
+  },
+  payments:[
+    {id:101,name:'Настя',        amount:500,    date:'2026-05-04',cat:'people'},
+    {id:102,name:'Альфа банк',   amount:500,    date:'2026-05-04',cat:'org'},
+    {id:103,name:'Миша',         amount:3150,   date:'2026-05-07',cat:'people'},
+    {id:104,name:'Настя',        amount:2400,   date:'2026-05-12',cat:'people'},
+    {id:105,name:'Сбер кредитка',amount:8473.53,date:'2026-05-12',cat:'org'},
+    {id:106,name:'Миша',         amount:100,    date:'2026-05-13',cat:'people'},
+    {id:107,name:'Миша',         amount:200,    date:'2026-05-14',cat:'people'},
+    {id:108,name:'Егор',         amount:5100,   date:'2026-05-19',cat:'people'},
+    {id:109,name:'Яндекс сплит', amount:14918,  date:'2026-05-19',cat:'people'},
+    {id:110,name:'Миша',         amount:3800,   date:'2026-05-19',cat:'people'},
+    {id:111,name:'Сбер кредитка',amount:2128,   date:'2026-05-19',cat:'org'},
+  ],
+  nextId:200
+};
+
+let D = JSON.parse(localStorage.getItem('debts_v2')||'null') || JSON.parse(JSON.stringify(DEFAULT));
+let donutC, barC, saveTimer;
+
+const save = () => { localStorage.setItem('debts_v2', JSON.stringify(D)); document.getElementById('save-status').textContent='Сохранено'; };
+const dirty = () => { clearTimeout(saveTimer); document.getElementById('save-status').textContent='…'; saveTimer=setTimeout(save,700); };
+const fmt = n => n==null?'—':Math.round(n).toLocaleString('ru-RU')+' ₽';
+const fmtK = n => n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?Math.round(n/1e3)+'k':Math.round(n);
+const fmtDate = s => { if(!s)return'—'; const d=new Date(s); return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit'}); };
+const genId = () => ++D.nextId;
+const catColor = c=>({org:'var(--orange)',micro:'var(--red)',people:'var(--blue)'}[c]||'var(--sub)');
+const catLabel = c=>({org:'Организации',micro:'Микрозаймы',people:'Люди'}[c]||c);
+const catTag   = c=>({org:'pt-org',micro:'pt-micro',people:'pt-people'}[c]||'');
+
+function totals(){
+  const t={};
+  let gD=0,gP=0;
+  for(const[k,s] of Object.entries(D.debts)){
+    let d=0,p=0;
+    s.items.forEach(i=>{d+=i.amount||0;p+=i.payment||0});
+    t[k]={debt:d,pay:p};
+    gD+=d;gP+=p;
+  }
+  const paid=D.payments.reduce((s,p)=>s+(p.amount||0),0);
+  return{t,gD,gP,paid,micro:t.micro?.debt||0};
+}
+
+// ── KPI ───────────────────────────────────────────────────────────────────────
+function updateKPI(){
+  const{t,gD,gP,paid,micro}=totals();
+  const cnt=Object.values(D.debts).reduce((s,sec)=>s+sec.items.length,0);
+  const setKpi=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val};
+  setKpi('kpi-total',  gD>=1e6?(gD/1e6).toFixed(2)+'M ₽':Math.round(gD).toLocaleString('ru-RU')+' ₽');
+  setKpi('kpi-total-sub', cnt+' кредиторов');
+  setKpi('kpi-month',  fmtK(gP)+' ₽');
+  setKpi('kpi-paid',   fmtK(paid)+' ₽');
+  setKpi('kpi-paid-sub', D.payments.length+' транзакций');
+  setKpi('kpi-micro',  fmtK(micro)+' ₽');
+  setKpi('grand-debt', fmt(gD));
+  setKpi('grand-pay',  fmt(gP));
+  // payments tab
+  setKpi('pay-total-big', fmt(paid));
+  setKpi('pay-count-big', D.payments.length);
+}
+
+// ── CHARTS ────────────────────────────────────────────────────────────────────
+function initCharts(){
+  const{t}=totals();
+  const labels=Object.values(D.debts).map(s=>s.label);
+  const hexes =Object.values(D.debts).map(s=>s.hex);
+  const debts =Object.values(t).map(x=>x.debt);
+  const pays  =Object.values(t).map(x=>x.pay);
+
+  donutC=new Chart(document.getElementById('donutChart'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data:debts,backgroundColor:hexes,borderWidth:0,hoverOffset:4}]},
+    options:{
+      cutout:'65%',
+      plugins:{
+        legend:{position:'top',labels:{color:'#8888a0',font:{family:'Golos Text',size:11},padding:12,boxWidth:8,boxHeight:8}},
+        tooltip:{callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return` ${ctx.parsed.toLocaleString('ru-RU')} ₽ (${(ctx.parsed/tot*100).toFixed(1)}%)`}}}
+      }
+    }
+  });
+
+  barC=new Chart(document.getElementById('barChart'),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Остаток',data:debts,backgroundColor:hexes.map(h=>h+'55'),borderColor:hexes,borderWidth:2,borderRadius:8},
+        {label:'Платёж/мес',data:pays,backgroundColor:'rgba(91,157,245,.2)',borderColor:'#5b9df5',borderWidth:2,borderRadius:8}
+      ]
+    },
+    options:{
+      plugins:{
+        legend:{labels:{color:'#8888a0',font:{family:'Golos Text',size:11},padding:12,boxWidth:8,boxHeight:8}},
+        tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y.toLocaleString('ru-RU')} ₽`}}
+      },
+      scales:{
+        x:{ticks:{color:'#8888a0',font:{family:'Golos Text',size:10}},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{ticks:{color:'#8888a0',font:{family:'Golos Text',size:10},callback:v=>fmtK(v)},grid:{color:'rgba(255,255,255,.04)'}}
+      }
+    }
+  });
+}
+
+function updateCharts(){
+  if(!donutC||!barC)return;
+  const{t}=totals();
+  donutC.data.datasets[0].data=Object.values(t).map(x=>x.debt);
+  barC.data.datasets[0].data=Object.values(t).map(x=>x.debt);
+  barC.data.datasets[1].data=Object.values(t).map(x=>x.pay);
+  donutC.update();barC.update();
+}
+
+// ── DEBT SECTIONS ─────────────────────────────────────────────────────────────
+function renderSections(){
+  const cont=document.getElementById('debt-sections');
+  cont.innerHTML='';
+  for(const[cat,sec] of Object.entries(D.debts)){
+    const wrap=document.createElement('div');
+    wrap.className='section';
+    wrap.id='section-'+cat;
+    cont.appendChild(wrap);
+    renderSection(cat);
+  }
+}
+
+function renderSection(cat){
+  const sec=D.debts[cat];
+  const{t}=totals();
+  const catT=t[cat];
+  const wrap=document.getElementById('section-'+cat);
+  if(!wrap)return;
+
+  wrap.innerHTML=`
+    <div class="section-head">
+      <div class="section-left">
+        <span class="sdot" style="background:${sec.color}"></span>
+        <span class="stitle" style="color:${sec.color}">${sec.label}</span>
+        <span class="scount" id="cnt-${cat}">${sec.items.length}</span>
+      </div>
+      <span class="stotal" style="color:${sec.color}" id="sub-${cat}">${fmt(catT.debt)}</span>
+    </div>
+    <div class="tcard">
+      <div class="t-header">
+        <span>Кредитор</span><span>Остаток</span><span>Платёж/мес</span>
+      </div>
+      <div id="rows-${cat}"></div>
+      <button class="add-row" onclick="openAddDebt('${cat}')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg>
+        Добавить строку
+      </button>
+    </div>`;
+
+  renderRows(cat);
+}
+
+function renderRows(cat){
+  const sec=D.debts[cat];
+  const cont=document.getElementById('rows-'+cat);
+  if(!cont)return;
+  cont.innerHTML='';
+
+  sec.items.forEach(item=>{
+    const row=document.createElement('div');
+    row.className='t-row';
+    row.dataset.id=item.id;
+    row.innerHTML=`
+      <div class="t-name">
+        <span class="t-pill" style="background:${sec.color}"></span>
+        <input class="t-name-text" value="${item.name}" data-field="name" data-cat="${cat}" data-id="${item.id}" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="t-cell num">
+        <input value="${item.amount||0}" data-field="amount" data-cat="${cat}" data-id="${item.id}" inputmode="decimal" autocomplete="off" style="color:${sec.color}">
+      </div>
+      <div class="t-cell muted">
+        <input value="${item.payment||0}" data-field="payment" data-cat="${cat}" data-id="${item.id}" inputmode="decimal" autocomplete="off">
+      </div>
+      <button class="del-btn" onclick="delDebt('${cat}',${item.id})">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" width="14" height="14"><path d="M2 2l10 10M12 2L2 12"/></svg>
+      </button>`;
+    cont.appendChild(row);
+  });
+
+  cont.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('change', onEdit);
+    inp.addEventListener('blur',   onEdit);
+  });
+}
+
+function onEdit(e){
+  const{field,cat,id}=e.target.dataset;
+  const item=D.debts[cat].items.find(i=>i.id==id);
+  if(!item)return;
+  const v=e.target.value.trim();
+  if(field==='amount'||field==='payment') item[field]=parseFloat(v.replace(/[^\d.]/g,''))||0;
+  else item[field]=v;
+  refreshSection(cat);
+  dirty();
+}
+
+function refreshSection(cat){
+  const{t}=totals();
+  const sc=document.getElementById('cnt-'+cat);
+  const ss=document.getElementById('sub-'+cat);
+  if(sc)sc.textContent=D.debts[cat].items.length;
+  if(ss)ss.textContent=fmt(t[cat].debt);
+  updateKPI();updateCharts();
+}
+
+function delDebt(cat,id){
+  D.debts[cat].items=D.debts[cat].items.filter(i=>i.id!=id);
+  renderRows(cat);refreshSection(cat);dirty();toast('Удалено');
+}
+
+let pendingCat='org';
+function openAddDebt(cat){
+  pendingCat=cat;
+  ['debt-name','debt-amount','debt-payment','debt-since'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('debt-cat').value=cat;
+  document.getElementById('modal-debt').classList.add('open');
+  setTimeout(()=>document.getElementById('debt-name').focus(),300);
+}
+function saveDebt(){
+  const name=document.getElementById('debt-name').value.trim();
+  const amount=parseFloat(document.getElementById('debt-amount').value)||0;
+  const payment=parseFloat(document.getElementById('debt-payment').value)||0;
+  const since=document.getElementById('debt-since').value.trim();
+  const cat=document.getElementById('debt-cat').value;
+  if(!name)return;
+  D.debts[cat].items.push({id:genId(),name,amount,payment,since});
+  closeSheet('modal-debt');
+  renderRows(cat);refreshSection(cat);dirty();toast('Долг добавлен');
+}
+
+// ── PAYMENTS ──────────────────────────────────────────────────────────────────
+function renderPayments(){
+  const wrap=document.getElementById('payments-wrap');
+  const sorted=[...D.payments].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  wrap.innerHTML='';
+  sorted.forEach(p=>{
+    const div=document.createElement('div');
+    div.className='pay-row';
+    div.innerHTML=`
+      <div>
+        <div class="pay-name"><span class="t-pill" style="background:${catColor(p.cat)}"></span>${p.name}</div>
+        <div class="pay-meta">${fmtDate(p.date)} · <span class="pay-tag ${catTag(p.cat)}">${catLabel(p.cat)}</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="pay-amount">+${(p.amount||0).toLocaleString('ru-RU',{minimumFractionDigits:(p.amount%1)?2:0})} ₽</span>
+        <button class="pay-del" onclick="delPay(${p.id})">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" width="13" height="13"><path d="M2 2l10 10M12 2L2 12"/></svg>
+        </button>
+      </div>`;
+    wrap.appendChild(div);
+  });
+  updateKPI();
+}
+
+function delPay(id){
+  D.payments=D.payments.filter(p=>p.id!=id);
+  renderPayments();dirty();toast('Выплата удалена');
+}
+
+function openAddPayment(){
+  ['pay-name','pay-amount'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pay-date-input').value=new Date().toISOString().slice(0,10);
+  document.getElementById('pay-cat').value='org';
+  document.getElementById('modal-payment').classList.add('open');
+  setTimeout(()=>document.getElementById('pay-name').focus(),300);
+}
+function savePayment(){
+  const name=document.getElementById('pay-name').value.trim();
+  const amount=parseFloat(document.getElementById('pay-amount').value)||0;
+  const date=document.getElementById('pay-date-input').value;
+  const cat=document.getElementById('pay-cat').value;
+  if(!name||!amount)return;
+  D.payments.push({id:genId(),name,amount,date,cat});
+  closeSheet('modal-payment');
+  renderPayments();dirty();toast('Выплата добавлена');
+}
+
+// ── UI UTILS ──────────────────────────────────────────────────────────────────
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+function closeSheet(id){document.getElementById(id).classList.remove('open')}
+function overlayClose(e,id){if(e.target===document.getElementById(id))closeSheet(id)}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.open').forEach(m=>m.classList.remove('open'))});
+
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='долги.json';a.click();
+  toast('Файл скачан');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderSections();
+renderPayments();
+updateKPI();
+initCharts();
+</script>
+</body>
+</html>
